@@ -1,5 +1,7 @@
 package org.physical_web.cms.beaconviewer;
 
+import android.net.Uri;
+
 import java.util.List;
 
 /**
@@ -8,4 +10,5 @@ import java.util.List;
 
 public interface BeaconListener {
     void onScanComplete(List<SeenBeacon> beaconList);
+    void onFoundExhibitURI(Uri uri);
 }

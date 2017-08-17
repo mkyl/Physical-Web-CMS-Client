@@ -4,6 +4,7 @@ import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements BeaconListener{
     BeaconScanner beaconScanner;
+    Uri baseExhibitURI = null;
 
     TextView status;
 
@@ -71,6 +73,13 @@ public class MainActivity extends AppCompatActivity implements BeaconListener{
             status.setText("No beacons around");
         } else {
             status.setText("Closest beacon: " + closestBeacon.device.getAddress());
+        }
+    }
+
+    @Override
+    public void onFoundExhibitURI(Uri uri) {
+        if (baseExhibitURI == null) {
+            baseExhibitURI = uri;
         }
     }
 }

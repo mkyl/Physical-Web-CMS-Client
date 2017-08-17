@@ -4,11 +4,13 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.ParcelUuid;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,6 +25,7 @@ public class BeaconScanner implements BluetoothAdapter.LeScanCallback {
 
     private static final ParcelUuid eddystoneURLIdentifier = ParcelUuid
             .fromString("0000FEAA-0000-1000-8000-00805F9B34FB");
+    private static final int EDDYSTONE_URL_FRAME_ID = 0x10;
 
     private BluetoothAdapter bluetoothAdapter;
     private BeaconListener listener;
@@ -90,6 +93,8 @@ public class BeaconScanner implements BluetoothAdapter.LeScanCallback {
     @Override
     public void onLeScan(BluetoothDevice bluetoothDevice, int rssi, byte[] bytes) {
         if (listener != null) {
+            processURLPacket(bytes);
+
             SeenBeacon oldBeaconRecord = searchForOldBeaconRecord(bluetoothDevice);
             if (oldBeaconRecord == null) {
                 SeenBeacon newlySeen = new SeenBeacon();
@@ -114,6 +119,17 @@ public class BeaconScanner implements BluetoothAdapter.LeScanCallback {
                 return seenBeacon;
         }
         return null;
+    }
+
+    private void processURLPacket(byte[] bytes) {
+        for (int i = 0; i < bytes.length; i++) {
+            byte b = bytes[i];
+            if (b == EDDYSTONE_URL_FRAME_ID) {
+                String url = "https://" + new String(Arrays.copyOfRange(bytes, i + 3, bytes.length))
+                        .replaceAll("\\s+","");
+                listener.onFoundExhibitURI(Uri.parse(url));
+            }
+        }
     }
 }
 
