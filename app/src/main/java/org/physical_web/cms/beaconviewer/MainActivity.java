@@ -10,8 +10,21 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.webkit.WebView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HurlStack;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements BeaconListener{
@@ -19,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements BeaconListener{
     Uri baseExhibitURI = null;
 
     TextView status;
+    WebView webView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements BeaconListener{
         beaconScanner = new BeaconScanner(this, this);
 
         status = (TextView) findViewById(R.id.status);
+        webView = (WebView) findViewById(R.id.webview);
     }
 
     @Override
@@ -70,16 +85,59 @@ public class MainActivity extends AppCompatActivity implements BeaconListener{
 
         if (closestBeacon == null) {
             // no beacons seen
+            status.setVisibility(View.VISIBLE);
             status.setText("No beacons around");
         } else {
-            status.setText("Closest beacon: " + closestBeacon.device.getAddress());
+            if (baseExhibitURI != null) {
+                String contentURI = baseExhibitURI + "/" + closestBeacon.device.getAddress()
+                        .replaceAll(":", "-");
+                Log.d("MainActivity", "Loading uri: " + contentURI);
+                webView.loadUrl(contentURI);
+                status.setVisibility(View.GONE);
+            }
         }
     }
 
     @Override
     public void onFoundExhibitURI(Uri uri) {
         if (baseExhibitURI == null) {
-            baseExhibitURI = uri;
+            if (uri.toString().contains("goo.gl"))
+                expandAndSetURI(uri);
+            else
+                baseExhibitURI = uri;
         }
+    }
+
+    private void expandAndSetURI(Uri uri) {
+        Log.d("MainActivity", "Expanding URI: " + uri.toString());
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(this, new HurlStack() {
+            @Override
+            protected HttpURLConnection createConnection(URL url) throws IOException {
+                HttpURLConnection connection = super.createConnection(url);
+                connection.setInstanceFollowRedirects(false);
+
+                return connection;
+            }
+        });
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, uri.toString(),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.e("MainActivity", "Those code should never run");
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // 301 is an "error"
+                Uri uri = Uri.parse(error.networkResponse.headers.get("Location"));
+                Log.d("MainActivity", "Expanded uri: " + uri.toString());
+                baseExhibitURI = uri;
+            }
+        });
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
     }
 }

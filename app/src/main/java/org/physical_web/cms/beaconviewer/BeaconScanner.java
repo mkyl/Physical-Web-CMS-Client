@@ -93,6 +93,7 @@ public class BeaconScanner implements BluetoothAdapter.LeScanCallback {
     @Override
     public void onLeScan(BluetoothDevice bluetoothDevice, int rssi, byte[] bytes) {
         if (listener != null) {
+            Log.d("BeaconScanner", "Saw a device: " + bluetoothDevice.getAddress());
             processURLPacket(bytes);
 
             SeenBeacon oldBeaconRecord = searchForOldBeaconRecord(bluetoothDevice);
@@ -126,7 +127,7 @@ public class BeaconScanner implements BluetoothAdapter.LeScanCallback {
             byte b = bytes[i];
             if (b == EDDYSTONE_URL_FRAME_ID) {
                 String url = "https://" + new String(Arrays.copyOfRange(bytes, i + 3, bytes.length))
-                        .replaceAll("\\s+","");
+                        .trim();
                 listener.onFoundExhibitURI(Uri.parse(url));
             }
         }
