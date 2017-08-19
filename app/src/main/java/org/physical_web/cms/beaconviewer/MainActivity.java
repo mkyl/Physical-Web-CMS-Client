@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements BeaconListener{
         if (closestBeacon == null) {
             // no beacons seen
             status.setVisibility(View.VISIBLE);
-            status.setText("No beacons around");
+            status.setText(R.string.intro_text);
         } else {
             if (baseExhibitURI != null) {
                 String contentURI = baseExhibitURI + "/" + closestBeacon.device.getAddress()

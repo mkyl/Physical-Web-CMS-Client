@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Beacon Viewer</string>
+    <string name="intro_text">Walk into an exhibit utilizing Physical Web technology and we will
+    display information and multimedia about the pieces nearby. </string>
 </resources>

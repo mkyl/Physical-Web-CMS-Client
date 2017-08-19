@@ -15,11 +15,13 @@
         android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="16dp"
         android:layout_x="136dp"
         android:layout_y="244dp"
-        android:text="Hello World!"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:text="@string/intro_text"
+        android:textAlignment="textStart"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
 </RelativeLayout>
