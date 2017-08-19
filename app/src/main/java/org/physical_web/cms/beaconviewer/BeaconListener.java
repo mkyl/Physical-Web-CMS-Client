@@ -11,4 +11,5 @@ import java.util.List;
 public interface BeaconListener {
     void onScanComplete(List<SeenBeacon> beaconList);
     void onFoundExhibitURI(Uri uri);
+    void onScanStarted();
 }

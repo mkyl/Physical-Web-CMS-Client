@@ -73,7 +73,14 @@ public class MainActivity extends AppCompatActivity implements BeaconListener{
     }
 
     @Override
+    public void onScanStarted() {
+        findViewById(R.id.progress).setVisibility(View.VISIBLE);
+    }
+
+    @Override
     public void onScanComplete(List<SeenBeacon> beaconList) {
+        findViewById(R.id.progress).setVisibility(View.GONE);
+
         SeenBeacon closestBeacon = null;
         int maxRSSI = -451;
         for (SeenBeacon seenBeacon : beaconList) {

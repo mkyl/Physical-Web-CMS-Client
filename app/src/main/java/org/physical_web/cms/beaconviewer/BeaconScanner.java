@@ -70,6 +70,8 @@ public class BeaconScanner implements BluetoothAdapter.LeScanCallback {
             @Override
             public void run() {
                 bluetoothAdapter.stopLeScan(BeaconScanner.this);
+                // return list of seen beacons
+                listener.onScanComplete(seenBeacons);
             }
         }, SCAN_PERIOD);
 
@@ -77,13 +79,12 @@ public class BeaconScanner implements BluetoothAdapter.LeScanCallback {
         UUID[] relevantUUIDs = new UUID[1];
         relevantUUIDs[0] = eddystoneURLIdentifier.getUuid();
 
+        listener.onScanStarted();
         bluetoothAdapter.startLeScan(relevantUUIDs, this);
 
         delayHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                // return list of seen beacons
-                listener.onScanComplete(seenBeacons);
                 // restart scan
                 scanHandler();
             }
