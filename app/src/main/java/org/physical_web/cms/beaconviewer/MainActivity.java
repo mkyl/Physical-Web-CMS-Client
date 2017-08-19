@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements BeaconListener{
         } else {
             if (baseExhibitURI != null) {
                 String contentURI = baseExhibitURI + "/" + closestBeacon.device.getAddress()
-                        .replaceAll(":", "-");
+                        .replaceAll(":", "-").toLowerCase();
                 Log.d("MainActivity", "Loading uri: " + contentURI);
                 webView.loadUrl(contentURI);
                 status.setVisibility(View.GONE);
